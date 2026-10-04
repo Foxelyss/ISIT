@@ -114,8 +114,8 @@ class Perceptron:
 
     def forward(self, inputs):
         """Прямой проход"""
-        self.last_inputs = inputs
-        self.weighted_sum = np.dot(inputs, self.weights) + self.bias
+        self.last_inputs = np.array(inputs)
+        self.weighted_sum = np.dot(self.last_inputs, self.weights) + self.bias
         self.output = self.activate(self.weighted_sum)
         return self.output
 
@@ -167,14 +167,14 @@ class PerceptronTrainer:
                     loss = LossFunctions.binary_cross_entropy(
                         np.array([prediction]), np.array(target)
                     )
-            total_loss += loss
-            # Обратное распространение
-            grad_weights, grad_bias = self.perceptron.backward(error)
-            # Обновление весов
-            self.perceptron.update_weights(grad_weights, grad_bias)
-            # Подсчет правильных предсказаний
-            if round(prediction) == target[0]:
-                correct_predictions += 1
+                total_loss += loss
+                # Обратное распространение
+                grad_weights, grad_bias = self.perceptron.backward(error)
+                # Обновление весов
+                self.perceptron.update_weights(grad_weights, grad_bias)
+                # Подсчет правильных предсказаний
+                if round(prediction) == target[0]:
+                    correct_predictions += 1
             # Сохранение истории
             accuracy = correct_predictions / len(training_data)
             epoch_history = {
