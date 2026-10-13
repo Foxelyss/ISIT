@@ -121,11 +121,7 @@ class MultiLayerNetwork:
                 )
 
             # Вычисление градиентов
-            if i == 0:  # Первый скрытый слой
-                grad_weights = np.outer(self.layers[0].last_inputs, delta)
-            else:
-                grad_weights = np.outer(self.layers[i - 1].last_output, delta)
-
+            grad_weights = np.outer(layer.last_inputs, delta)
             grad_biases = delta
 
             gradients.insert(0, (grad_weights, grad_biases))
@@ -196,20 +192,20 @@ class NetworkTrainer:
                 self.network.update_weights(gradients)
 
                 # Подсчет правильных предсказаний
-                predicted_class = 1 if prediction > 0.5 else 0
-                if predicted_class == target:
+                predicted_class = 1 if prediction[0] > 0.5 else 0
+                if predicted_class == target[0]:
                     correct_predictions += 1
 
-            # Валидация
-            val_accuracy = 0
-            if validation_data:
-                val_correct = 0
-                for val_inputs, val_target in validation_data:
-                    val_prediction = self.network.forward(val_inputs)
-                    val_predicted_class = 1 if val_prediction > 0.5 else 0
-                    if val_predicted_class == val_target:
-                        val_correct += 1
-                val_accuracy = val_correct / len(validation_data)
+                # Валидация
+                val_accuracy = 0
+                if validation_data:
+                    val_correct = 0
+                    for val_inputs, val_target in validation_data:
+                        val_prediction = self.network.forward(val_inputs)
+                        val_predicted_class = 1 if val_prediction[0] > 0.5 else 0
+                        if val_predicted_class == val_target[0]:
+                            val_correct += 1
+                    val_accuracy = val_correct / len(validation_data)
 
             # Сохранение истории
             accuracy = correct_predictions / len(training_data)
@@ -397,8 +393,8 @@ def experiment_xor_solution():
         correct = 0
         for inputs, target in xor_data:
             prediction = network.forward(inputs)
-            predicted_class = 1 if prediction > 0.5 else 0
-            if predicted_class == target:
+            predicted_class = 1 if prediction[0] > 0.5 else 0
+            if predicted_class == target[0]:
                 correct += 1
 
         accuracy = correct / len(xor_data)
